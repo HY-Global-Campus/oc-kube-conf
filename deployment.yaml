@@ -1,0 +1,136 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gcai-backend
+  namespace: gccluster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gcai-backend
+  template:
+    metadata:
+      labels:
+        app: gcai-backend
+    spec:
+      containers:
+      - name: gcai-backend
+        image: ghcr.io/hy-global-campus/gcai-backend:main
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+          - name: OPENAI_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: gc-secret
+                key: OPENAI_API_KEY
+          - name: OPENAI_API_BASE
+            valueFrom:
+              secretKeyRef:
+                name: gc-secret
+                key: OPENAI_API_BASE
+          - name: AUTH_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: gc-secret
+                key: GCAI_AUTH_TOKEN
+          - name: AZURE_SEARCH_KEY
+            valueFrom:
+              secretKeyRef:
+                name: gc-secret
+                key: AZURE_SEARCH_KEY
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gcai-frontend
+  namespace: gccluster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gcai-frontend
+  template:
+    metadata:
+      labels:
+        app: gcai-frontend
+    spec:
+      containers:
+      - name: gcai-frontend
+        image: ghcr.io/hy-global-campus/gcai-frontend:main
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        env:
+          - name: BACKEND_URL
+            valueFrom:
+              secretKeyRef:
+                name: gc-secret
+                key: BACKEND_URL
+          - name: BACKEND_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: gc-secret
+                key: GCAI_AUTH_TOKEN
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookofserendip
+  namespace: gccluster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookofserendip
+  template:
+    metadata:
+      labels:
+        app: bookofserendip
+    spec:
+      containers:
+      - name: bookofserendip
+        image: ghcr.io/hy-global-campus/book-of-serendip-frontend:master
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookofserendip-backend
+  namespace: gccluster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookofserendip-backend
+  template:
+    metadata:
+      labels:
+        app: bookofserendip-backend
+    spec:
+      containers:
+      - name: bookofserendip-backend
+        image: ghcr.io/hy-global-campus/book-of-serendip-backend:master
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: gc-secret
+                key: BOS_DATABASE_URL
+          - name: JWT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: gc-secret
+                key: BOS_JWT_SECRET
+          - name: NODE_ENV
+            value: production
+

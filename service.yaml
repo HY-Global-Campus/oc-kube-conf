@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gcai-frontend-service
+  namespace: gccluster
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 3000
+  selector:
+    app: gcai-frontend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gcai-backend-service
+  namespace: gccluster
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: gcai-backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookofserendip-service
+  namespace: gccluster
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 3000
+  selector:
+    app: bookofserendip
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookofserendip-backend-service
+  namespace: gccluster
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: bookofserendip-backend
+
