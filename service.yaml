@@ -49,4 +49,30 @@ spec:
     targetPort: 8080
   selector:
     app: bookofserendip-backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: business-model-canvas-service
+  namespace: gccluster
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 3000
+  selector:
+    app: business-model-canvas
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: business-model-canvas-backend-service
+  namespace: gccluster
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: business-model-canvas-backend
 

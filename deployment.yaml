@@ -5,7 +5,7 @@ metadata:
   name: gcai-backend
   namespace: gccluster
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: gcai-backend
@@ -83,7 +83,7 @@ metadata:
   name: bookofserendip
   namespace: gccluster
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: bookofserendip
@@ -105,7 +105,7 @@ metadata:
   name: bookofserendip-backend
   namespace: gccluster
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: bookofserendip-backend
@@ -131,6 +131,98 @@ spec:
               secretKeyRef:
                 name: gc-secret
                 key: BOS_JWT_SECRET
+          - name: GCAI_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: gc-secret
+                key: GCAI_AUTH_TOKEN
+          - name: GCAI_URL
+            valueFrom:
+              secretKeyRef:
+                name: gc-secret
+                key: BACKEND_URL
+          - name: ACCELBYTE_ADMIN_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: gc-secret
+                key: ACCELBYTE_ADMIN_SECRET
+          - name: ACCELBYTE_ADMIN_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: gc-secret
+                key: ACCELBYTE_ADMIN_CLIENT_ID
+          - name: SERENDIP_WHITELIST_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: gc-secret
+                key: SERENDIP_WHITELIST_TOKEN
+          - name: NODE_ENV
+            value: production
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: business-model-canvas
+  namespace: gccluster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: business-model-canvas
+  template:
+    metadata:
+      labels:
+        app: business-model-canvas
+    spec:
+      containers:
+      - name: business-model-canvas
+        image: ghcr.io/hy-global-campus/business-model-canvas-frontend:master
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: business-model-canvas-backend
+  namespace: gccluster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: business-model-canvas-backend
+  template:
+    metadata:
+      labels:
+        app: business-model-canvas-backend
+    spec:
+      containers:
+      - name: business-model-canvas-backend
+        image: ghcr.io/hy-global-campus/business-model-canvas-backend:master
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: gc-secret
+                key: BOS_DATABASE_URL
+          - name: JWT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: gc-secret
+                key: BOS_JWT_SECRET
+          - name: GCAI_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: gc-secret
+                key: GCAI_AUTH_TOKEN
+          - name: GCAI_URL
+            valueFrom:
+              secretKeyRef:
+                name: gc-secret
+                key: BACKEND_URL
           - name: NODE_ENV
             value: production
 
