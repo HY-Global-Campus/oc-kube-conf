@@ -75,4 +75,30 @@ spec:
     targetPort: 8080
   selector:
     app: business-model-canvas-backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hype-mooc-service
+  namespace: gccluster
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 3000
+  selector:
+    app: hype-mooc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hype-mooc-backend-service
+  namespace: gccluster
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: hype-mooc-backend
 
