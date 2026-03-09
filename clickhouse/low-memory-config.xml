@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<clickhouse>
+  <listen_host>::</listen_host>
+
+  <!-- low-memory tweaks -->
+  <max_concurrent_queries>4</max_concurrent_queries>
+  <mark_cache_size>8589934592</mark_cache_size>
+  <merge_tree>
+    <merge_max_block_size>4096</merge_max_block_size>
+    <max_bytes_to_merge_at_max_space_in_pool>8589934592</max_bytes_to_merge_at_max_space_in_pool>
+    <number_of_free_entries_in_pool_to_lower_max_size_of_merge>2</number_of_free_entries_in_pool_to_lower_max_size_of_merge>
+  </merge_tree>
+</clickhouse>

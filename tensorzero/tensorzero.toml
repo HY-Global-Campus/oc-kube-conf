@@ -1,0 +1,18 @@
+[gateway]
+debug = true
+objervability.enables = true
+
+[models.gpt-4o]
+routing = ["azure"]
+
+[models.gpt-4o.providers.azure]
+type = "azure"
+deployment_id = "gpt-4o"
+endpoint = "https://hy-openai-sweden.openai.azure.com"
+
+[functions.chat]
+type = "chat"
+
+[functions.chat.variants.chat_completion]
+type = "chat_completion"
+model = "gpt-4o"
