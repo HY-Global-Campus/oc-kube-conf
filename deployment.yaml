@@ -225,6 +225,32 @@ spec:
                 key: BACKEND_URL
           - name: NODE_ENV
             value: production
+          # mooc.fi OIDC
+          - name: MOOC_CLIENT_ID
+            value: bmc
+          - name: MOOC_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: gc-secret
+                key: BMC_OAUTH_SECRET
+
+          - name: MOOC_ISSUER_URL
+            value: https://courses.mooc.fi/api/v0/main-frontend/oauth
+
+          # Must match what you registered at mooc.fi
+          - name: MOOC_REDIRECT_URI
+            value: https://bmc-gccluster.ext.ocp-prod-0.k8s.it.helsinki.fi/auth/callback
+
+          # Signed cookie secret (recommended explicit, don’t reuse JWT_SECRET)
+          - name: COOKIE_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: gc-secret
+                key: BMC_COOKIE_SECRET
+
+          # CORS allow your frontend origin (comma-separated if multiple)
+          - name: ALLOWED_ORIGINS
+            value: https://bmc-gccluster.ext.ocp-prod-0.k8s.it.helsinki.fi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -242,11 +268,11 @@ spec:
         app: hype-mooc
     spec:
       containers:
-      - name: hype-mooc
-        image: ghcr.io/hy-global-campus/hype-mooc-frontend:master
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 3000
+        - name: hype-mooc
+          image: ghcr.io/hy-global-campus/hype-mooc-frontend:master
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -264,31 +290,48 @@ spec:
         app: hype-mooc-backend
     spec:
       containers:
-      - name: hype-mooc-backend
-        image: ghcr.io/hy-global-campus/hype-mooc-backend:master
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8080
-        env:
-          - name: DATABASE_URL
-            valueFrom:
-              secretKeyRef:
-                name: gc-secret
-                key: BMC_DATABASE_URL
-          - name: JWT_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: gc-secret
-                key: BOS_JWT_SECRET
-          - name: GCAI_TOKEN
-            valueFrom:
-              secretKeyRef:
-                name: gc-secret
-                key: GCAI_AUTH_TOKEN
-          - name: GCAI_URL
-            valueFrom:
-              secretKeyRef:
-                name: gc-secret
-                key: BACKEND_URL
-          - name: NODE_ENV
-            value: production
+        - name: hype-mooc-backend
+          image: ghcr.io/hy-global-campus/hype-mooc-backend:master
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: NODE_ENV
+              value: production
+
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: gc-secret
+                  key: HYPE_DATABASE_URL
+
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: gc-secret
+                  key: BOS_JWT_SECRET
+
+            - name: GCAI_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: gc-secret
+                  key: GCAI_AUTH_TOKEN
+
+            - name: GCAI_URL
+              valueFrom:
+                secretKeyRef:
+                  name: gc-secret
+                  key: BACKEND_URL
+
+            # --- OIDC / MOOC.fi ---
+            - name: OIDC_ISSUER_URL
+              value: "https://courses.mooc.fi/api/v0/main-frontend/oauth"
+
+            - name: OIDC_CLIENT_ID
+              value: "hype-mooc"
+
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: gc-secret
+                  key: HYPE_MOOC_OAUTH_SECRET
